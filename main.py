@@ -38,9 +38,9 @@ import pandas as pd
 # In[30]:
 
 
-#もろもろのパスを指定
+#specify root directory
 root_dir= '/mnt/c/Users/survey/Desktop/NAPS'
-#もともとの画像が入っているディレクトリ
+#Specify the directory containing the original images
 image_original_dir= '/mnt/c/Users/survey/Desktop/NAPS/naps_l'
 
 
