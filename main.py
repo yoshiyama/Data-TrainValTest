@@ -6,6 +6,8 @@
 # なお、ここでのラベルは、連続値を前提としているが、離散値（よくあるクラス分類）でも問題ないだろう。
 # 単に分けるだけでなく、あらためてディレクトリにリストファイル（ラベル、属性値のcsvファイル）も作成する。
 
+# csvのフォーマットは整形しておくこと。を前提としている。
+
 # 処理にはPandasを使います。
 
 # # データセットの準備
@@ -34,12 +36,44 @@ import shutil
 import random
 import pandas as pd
 
-
+#--------------------------------------------------------------------------------
 #specify root directory
 root_dir= '/mnt/c/Users/survey/Desktop/NAPS'
 #Specify the directory containing the original images
-image_original_dir= '/mnt/c/Users/survey/Desktop/NAPS/naps_l'
+image_original_dir_name= 'naps_l'
+image_original_dir=root_dir+'/'+image_original_dir_name
+print(image_original_dir)
+# image_original_dir= '/mnt/c/Users/survey/Desktop/NAPS/naps_l'
+# もとのCSVファイル
+label_file_name='NAPS.csv'
+label_file=root_dir+'/'+label_file_name
+print(label_file)
 
+#csvファイルの宛にする列名
+#ここではファイいる名の列名を指定
+key_index="Filename"
+
+# specify the save directory
+Train_Val_dir_name= 'Train_Val'
+Test_dir_name= 'Test'
+# Train_Val_dir= '/mnt/c/Users/survey/Desktop/NAPS/Train_Val'
+# Test_dir= '/mnt/c/Users/survey/Desktop/NAPS/Test'
+Train_Val_dir=root_dir+'/'+Train_Val_dir_name
+Test_dir= root_dir+'/'+Test_dir_name
+print(Train_Val_dir)
+print(Test_dir)
+
+# label_file= '/mnt/c/Users/survey/Desktop/NAPS/NAPS.csv'
+Train_Val_csv= "Train_Val.csv"
+Test_csv= "Test.csv"
+
+
+
+#割合を指定
+Train_Val_P=0.9
+Test_P=0.1
+
+#------------------------------------------------------------------------------------------------
 
 # os.listdir()を使って、ディレクトリ内の全てのファイル名を取得
 files_in_directory = os.listdir(image_original_dir)
@@ -47,18 +81,10 @@ files_in_directory = os.listdir(image_original_dir)
 for file in files_in_directory:
     print(file)
 
-# specify the save directory
-Train_Val_dir= '/mnt/c/Users/survey/Desktop/NAPS/Train_Val'
-Test_dir= '/mnt/c/Users/survey/Desktop/NAPS/Test'
-
 
 # もとのデータ・セットのファイル名をシャッフル
 random.shuffle(files_in_directory)
 
-
-#割合を指定
-Train_Val_P=0.9
-Test_P=0.1
 
 #いったんファイル名だけ分割
 num_train = int(Train_Val_P * len(files_in_directory))
@@ -75,8 +101,7 @@ for file in val_files:
 
 # # それぞれのディレクトリにあるファイル名を取得し、そのファイル名に紐づくラベルを取得し、csvファイルを作成する。
 
-# もとのCSVファイル
-label_file= '/mnt/c/Users/survey/Desktop/NAPS/NAPS.csv'
+
 
 # CSVファイルを開く
 with open(label_file, 'r') as csvfile:
@@ -86,7 +111,6 @@ with open(label_file, 'r') as csvfile:
     # CSVファイルの内容を1行ずつ読み込み、表示
     for row in reader:
         print(row)
-
 
 current_working_directory = os.getcwd()
 print(current_working_directory)
@@ -104,14 +128,14 @@ df = pd.read_csv(label_file)  # 必要に応じてパスを修正
 
 #ファイル名をたよりに、ラベルを取得
 # フォルダAとフォルダBのファイル名に対応する行だけを抽出
-df_A = df[df['Filename'].isin(file_names_A)]
-df_B = df[df['Filename'].isin(file_names_B)]
+df_A = df[df[key_index].isin(file_names_A)]
+df_B = df[df[key_index].isin(file_names_B)]
 
 print(df_A)
 print(df_B)
 
-result_A_path = os.path.join(root_dir, "Train_Val.csv")
-result_B_path = os.path.join(root_dir, "Test.csv")
+result_A_path = os.path.join(root_dir, Train_Val_csv)
+result_B_path = os.path.join(root_dir, Test_csv)
 print(result_A_path)
 print(result_B_path)
 #保存する
